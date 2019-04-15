@@ -39,6 +39,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -56,5 +58,11 @@
 	<string>Snacktacular needs access to the device location in order to show this on a map.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Snacktacular needs access to the device location in order to show this on a map.</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>&quot;Snacktacular needs access to your camera in order to post photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>&quot;Snacktacular needs access to your photo library in order to post photos.</string>
 </dict>
 </plist>
