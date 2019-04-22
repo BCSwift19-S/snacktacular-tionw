@@ -19,17 +19,16 @@ class SpotDetailViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var saveBarButton: UIBarButtonItem!
     @IBOutlet weak var cancelBarButton: UIBarButtonItem!
-    
+    @IBOutlet weak var saveBarButton: UIBarButtonItem!
     
     var spot: Spot!
     var reviews: Reviews!
     var photos: Photos!
-    var imagePicker = UIImagePickerController()
     let regionDistance: CLLocationDistance = 750
     var locationManager: CLLocationManager!
     var currentLocation: CLLocation!
+    var imagePicker = UIImagePickerController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +37,6 @@ class SpotDetailViewController: UIViewController {
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
         
-        
         //mapView.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
@@ -46,12 +44,12 @@ class SpotDetailViewController: UIViewController {
         collectionView.dataSource = self
         imagePicker.delegate = self
         
-        if spot == nil{
+        if spot == nil {
             spot = Spot()
             getLocation()
             nameField.addBorder(width: 0.5, radius: 5.0, color: .black)
             addressField.addBorder(width: 0.5, radius: 5.0, color: .black)
-        }else{
+        } else{
             nameField.isEnabled = false
             addressField.isEnabled = false
             nameField.backgroundColor = UIColor.clear
@@ -71,101 +69,11 @@ class SpotDetailViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reviews.loadData(spot: spot){
+        
+        reviews.loadData(spot: spot) {
             self.tableView.reloadData()
         }
     }
-    
-    func showAlert(title: String, message: String){
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let alertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertController.addAction(alertAction)
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func updateUserInterface(){
-        nameField.text = spot.name
-        addressField.text = spot.address
-        updateMap()
-    }
-    
-    
-    func updateMap(){
-        mapView.removeAnnotations(mapView.annotations)
-        mapView.addAnnotation(spot)
-        mapView.setCenter(spot.coordinate, animated: true)
-    }
-    
-    func leaveViewController(){
-        let isPresentingInAddMode = presentingViewController is UINavigationController
-        if isPresentingInAddMode {
-            dismiss(animated: true, completion: nil)
-        } else {
-            navigationController?.popViewController(animated: true)
-        }
-    }
-    
-    func cameraOrLibraryAlert(){
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let cameraAction = UIAlertAction(title: "Camera", style: .default) { _ in
-            self.accessCamera()
-        }
-        let photoLibraryAction = UIAlertAction(title: "Photo Library", style: .default) { _ in
-            self.accessLibrary()
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(cameraAction)
-        alertController.addAction(photoLibraryAction)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
-    }
-
-    @IBAction func photoButtonPressed(_ sender: UIButton) {
-        cameraOrLibraryAlert()
-    }
-    
-    
-    @IBAction func lookupPlacePressed(_ sender: UIBarButtonItem) {
-        let autocompleteController = GMSAutocompleteViewController()
-        autocompleteController.delegate = self
-        present(autocompleteController, animated: true, completion: nil)
-        
-    }
-    
-    @IBAction func reviewButtonPressed(_ sender: UIButton) {
-        performSegue(withIdentifier: "AddReview", sender: nil)
-    }
-    
-    @IBAction func saveButtonPressed(_ sender: UIBarButtonItem) {
-        spot.name = nameField.text!
-        spot.address = addressField.text!
-        spot.saveData { success in
-            if success {
-                self.leaveViewController()
-            }else{
-                print("*** ERROR: Couldn't leave this view controller because data wasn't saved")
-            }
-        }
-    }
-    
-    @IBAction func cancelButtonPressed(_ sender: UIBarButtonItem) {
-        leaveViewController()
-    }
-    
-    @IBAction func textFieldEditingCHanged(_ sender: UITextField) {
-        
-        saveBarButton.isEnabled = !(nameField.text == "")
-        
-    }
-    
-    @IBAction func textFieldReturnPressed(_ sender: UITextField) {
-        sender.resignFirstResponder()
-        spot.name = nameField.text!
-        spot.address = addressField.text!
-        updateUserInterface()
-    }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         spot.name = nameField.text!
@@ -184,25 +92,104 @@ class SpotDetailViewController: UIViewController {
             let selectedIndexPath = tableView.indexPathForSelectedRow!
             destination.review = reviews.reviewArray[selectedIndexPath.row]
         default:
-            print("Error")
+            print("ERROR: DID NOT HAVE A SEGUE IN SPOTDETAIL")
         }
     }
     
+    @IBAction func textFieldEditingChanged(_ sender: UITextField) {
+        saveBarButton.isEnabled = !(nameField.text == "")
+    }
     
-}
+    @IBAction func textFieldReturnPressed(_ sender: UITextField) {
+        sender.resignFirstResponder()
+        spot.name = nameField.text!
+        spot.address = addressField.text!
+        updateUserInterface()
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(alertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func cameraOrLibraryAlert() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let cameraAction = UIAlertAction(title: "Camera", style: .default){ _ in
+            self.accessCamera()
+            
+        }
+        let photoLibraryAction = UIAlertAction(title: "Photo Library", style: .default) { _ in
+            self.accessLibrary()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cameraAction)
+        alertController.addAction(photoLibraryAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func updateUserInterface() {
+        nameField.text = spot.name
+        addressField.text = spot.address
+        updateMap()
+    }
+    
+    func updateMap() {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.addAnnotation(spot)
+        mapView.setCenter(spot.coordinate, animated: true)
+    }
+    
+    func leaveViewController(){
+        let isPresentingInAddMode = presentingViewController is UINavigationController
+        if isPresentingInAddMode {
+            dismiss(animated: true, completion: nil)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
 
+    @IBAction func photoButtonPressed(_ sender: UIButton) {
+        cameraOrLibraryAlert()
+    }
+    
+    @IBAction func reviewButtonPressed(_ sender: UIButton) {
+        performSegue(withIdentifier: "AddReview", sender: nil)
+    }
+    
+    @IBAction func saveButtonPressed(_ sender: UIBarButtonItem) {
+        spot.name = nameField.text!
+        spot.address = addressField.text!
+        spot.saveData { success in
+            if success {
+                self.leaveViewController()
+            } else{
+                print("error data wasnt saved")
+            }
+        }
+    }
+    @IBAction func lookupPlacePressed(_ sender: UIBarButtonItem) {
+        let autocompleteController = GMSAutocompleteViewController()
+        autocompleteController.delegate = self
+        present(autocompleteController, animated: true, completion: nil)
+    }
+    
+    @IBAction func cancelButtonPressed(_ sender: UIBarButtonItem) {
+        leaveViewController()
+    }
+}
 
 extension SpotDetailViewController: GMSAutocompleteViewControllerDelegate {
     
     // Handle the user's selection.
     func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
-
         spot.name = place.name!
         spot.address = place.formattedAddress ?? ""
         spot.coordinate = place.coordinate
-        
-        dismiss(animated: true, completion: nil)
         updateUserInterface()
+        dismiss(animated: true, completion: nil)
     }
     
     func viewController(_ viewController: GMSAutocompleteViewController, didFailAutocompleteWithError error: Error) {
@@ -226,13 +213,12 @@ extension SpotDetailViewController: GMSAutocompleteViewControllerDelegate {
     
 }
 
-extension SpotDetailViewController: CLLocationManagerDelegate {
+extension SpotDetailViewController: CLLocationManagerDelegate{
     
     func getLocation(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
     }
-    
     
     func handleLocationAuthorizationStatus(status: CLAuthorizationStatus){
         switch status {
@@ -240,10 +226,10 @@ extension SpotDetailViewController: CLLocationManagerDelegate {
             locationManager.requestWhenInUseAuthorization()
         case .authorizedAlways, .authorizedWhenInUse:
             locationManager.requestLocation()
-        case .denied:
-            showAlert(title: "User has not authorized location services", message: "Select 'Settings' below to open device settings and enable location sevices for this app")
-        case .restricted:
-            showAlert(title: "Location services denied", message: "It may be that parental controls are restricting location use in this app")
+        case.denied:
+            print("I'm sorry - can't show location.")
+        case.restricted:
+            print("Access denied.")
         }
     }
     
@@ -252,14 +238,12 @@ extension SpotDetailViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard spot.name == "" else{
+        guard spot.name == "" else {
             return
         }
-
         let geoCoder = CLGeocoder()
         var name = ""
         var address = ""
-        
         currentLocation = locations.last
         spot.coordinate = currentLocation.coordinate
         geoCoder.reverseGeocodeLocation(currentLocation, completionHandler:
@@ -270,23 +254,26 @@ extension SpotDetailViewController: CLLocationManagerDelegate {
                     if let postalAddress = placemark?.postalAddress {
                         address = CNPostalAddressFormatter.string(from: postalAddress, style: .mailingAddress)
                     }
-                }else{
-                    print("***Error retrieving place. Error code: \(error!.localizedDescription)")
+                    
+                } else{
+                    print("Error retrieving place. Error code:\(error!)")
                 }
                 self.spot.name = name
                 self.spot.address = address
                 self.updateUserInterface()
-        })
+                
+        }
+        )
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to get user's location.")
+        print("Failed to get user location.")
     }
 }
 
-extension SpotDetailViewController: UITableViewDataSource, UITableViewDelegate {
+extension SpotDetailViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-       return reviews.reviewArray.count
+        return reviews.reviewArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -294,8 +281,6 @@ extension SpotDetailViewController: UITableViewDataSource, UITableViewDelegate {
         cell.review = reviews.reviewArray[indexPath.row]
         return cell
     }
-    
-    
 }
 
 extension SpotDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource{
@@ -308,40 +293,32 @@ extension SpotDetailViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.photo = photos.photoArray[indexPath.row]
         return cell
     }
-    
-    
 }
 
-
-
 extension SpotDetailViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let photo = Photo()
-        photo.image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        photo.image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         photos.photoArray.append(photo)
         dismiss(animated: true) {
-            self.collectionView.reloadData()
-        }
+            self.collectionView.reloadData()        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
     
-    func accessLibrary(){
+    func accessLibrary() {
         imagePicker.sourceType = .photoLibrary
         present(imagePicker, animated: true, completion: nil)
     }
     
-    func accessCamera(){
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            imagePicker.sourceType = .camera
-            present(imagePicker, animated: true, completion: nil)
-        }else{
+    func accessCamera() {
+        if UIImagePickerController.isSourceTypeAvailable(.camera){
+        imagePicker.sourceType = .camera
+        present(imagePicker, animated: true, completion: nil)
+        } else {
             showAlert(title: "Camera Not Available", message: "There is no camera available on this device.")
         }
-        
-        
     }
 }
