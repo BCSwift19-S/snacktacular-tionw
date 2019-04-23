@@ -53,26 +53,43 @@ class Review {
         if self.documentID != "" {
             let ref = db.collection("spots").document(spot.documentID).collection("reviews").document(self.documentID)
             ref.setData(dataToSave) { (error) in
-                if let error = error{
+                if error != nil{
                     print("Error: updating document in spot \(spot.documentID)")
                     completed(false)
                 } else {
                     print("document updated")
-                    completed(true)
+                    spot.updateAverageRating {
+                        completed(true)
+                    }
                 }
             }
         } else{
             var ref: DocumentReference? = nil
             ref = db.collection("spots").document(spot.documentID).collection("reviews").addDocument(data: dataToSave) { error in
-                if let error = error{
+                if error != nil{
                     print("Error: creating document in spot \(spot.documentID) for new review documentID")
                     completed(false)
                 } else {
                     print("document created")
+                    spot.updateAverageRating {
+                        completed(true)
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteData(spot: Spot, completed: @escaping (Bool) -> ()) {
+        let db = Firestore.firestore()
+        db.collection("spots").document(spot.documentID).collection("reviews").document(documentID).delete() { error in
+            if let error = error {
+                print("*** ERROR: deleting review document ID \(self.documentID) \(error.localizedDescription)")
+                completed(false)
+            } else {
+                spot.updateAverageRating {
                     completed(true)
                 }
             }
         }
     }
-
 }

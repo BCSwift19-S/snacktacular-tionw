@@ -607,7 +607,7 @@
                                                         <constraint firstAttribute="height" constant="21" id="za2-Mk-IxN"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="17"/>
-                                                    <nil key="textColor"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Nf5-Ve-qad">
@@ -662,6 +662,9 @@
                                                     <state key="normal" title="Delete Review">
                                                         <color key="titleColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="deleteButtonPressed:" destination="Goy-no-sID" eventType="touchUpInside" id="fSd-P6-JGb"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
@@ -679,8 +682,12 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" leftItemsSupplementBackButton="YES" id="ezs-SO-67N">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="LUA-Oh-JKN"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="KMy-OA-Vhb">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="LUA-Oh-JKN">
+                            <connections>
+                                <action selector="cancelButtonPressed:" destination="Goy-no-sID" id="BkJ-Ni-foe"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Save" id="KMy-OA-Vhb">
                             <connections>
                                 <action selector="saveButtonPressed:" destination="Goy-no-sID" id="vtC-04-vek"/>
                             </connections>
@@ -695,8 +702,8 @@
                         <outlet property="nameLabel" destination="7Tc-di-hm9" id="8Ss-KQ-WoP"/>
                         <outlet property="postedByLabel" destination="VrT-Mh-LGc" id="dgt-7P-Ytg"/>
                         <outlet property="reviewDate" destination="led-JM-Beg" id="3Fm-mM-jff"/>
-                        <outlet property="reviewTitle" destination="osb-rc-f4K" id="44z-6F-k90"/>
-                        <outlet property="reviewView" destination="Nf5-Ve-qad" id="iSV-JA-nRJ"/>
+                        <outlet property="reviewTextView" destination="Nf5-Ve-qad" id="iSV-JA-nRJ"/>
+                        <outlet property="reviewTitleField" destination="osb-rc-f4K" id="44z-6F-k90"/>
                         <outlet property="saveBarButtonItem" destination="KMy-OA-Vhb" id="kra-s9-sER"/>
                         <outletCollection property="starButtonCollection" destination="8Ri-na-rIC" collectionClass="NSMutableArray" id="n8d-7c-6ab"/>
                         <outletCollection property="starButtonCollection" destination="fb6-Vx-TTu" collectionClass="NSMutableArray" id="kuY-d7-fC9"/>
@@ -707,7 +714,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E0u-C5-Xkq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1959" y="527"/>
+            <point key="canvasLocation" x="1686" y="531"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="16M-u3-wsL">
@@ -782,7 +789,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QwV-qd-AUb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="884" y="98"/>
+            <point key="canvasLocation" x="935" y="408"/>
         </scene>
     </scenes>
     <resources>
@@ -791,7 +798,7 @@
         <image name="star-white" width="30" height="29"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="g4s-3W-Q9F"/>
+        <segue reference="ysN-cB-88T"/>
         <segue reference="sl5-aU-Gjj"/>
     </inferredMetricsTieBreakers>
 </document>
